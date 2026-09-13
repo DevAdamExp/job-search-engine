@@ -19,6 +19,10 @@ description: >
   ansøgningsfrist, søg efter job, full time job denmark, part time job denmark.
 context: fork
 enabled: false  # Danish demo portal - ships opt-in; /setup enables it when your market is Denmark, or set true here yourself
+title: "Jobnet (Denmark, official)"
+countries: ["DK"]
+official: true
+sponsor_signal: none (Denmark has no sponsor register; Positive List / Pay Limit schemes)
 allowed-tools: Bash(bun run .agents/skills/jobnet-search/cli/src/cli.ts *)
 ---
 

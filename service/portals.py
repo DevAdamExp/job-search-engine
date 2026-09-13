@@ -35,7 +35,7 @@ BUN = os.environ.get("BUN_BIN", "bun")
 # its own, which callers pass through ``extra``.
 COMMON_FLAGS = ("query", "jobage", "page", "limit", "format")
 # Never accepted through ``extra``: the service maps these itself, or they hijack the CLI.
-RESERVED_FLAGS = set(COMMON_FLAGS) | {"location", "remote", "help", "h", "q", "l", "n"}
+RESERVED_FLAGS = set(COMMON_FLAGS) | {"location", "country", "remote", "help", "h", "q", "l", "n"}
 
 # Where a portal does not take ``--location`` the way the contract suggests, say how the
 # service's ``location`` field maps. Anything not listed maps to ``--location``.
@@ -45,9 +45,17 @@ LOCATION_FLAG = {
 }
 
 # Minimum seconds between two calls to the same portal (robots Crawl-delay or politeness).
-MIN_INTERVAL_S = {
-    "jobbank-ca-search": 5.0,   # www.jobbank.gc.ca/robots.txt: Crawl-delay: 5
-    "linkedin-search": 3.0,     # personal-use terms: keep volume low
+MIN_INTERVAL_S: dict[str, float] = {
+    "jobbank-ca-search": 5.0,        # robots.txt Crawl-delay: 5
+    "linkedin-search": 3.0,
+    "themuse-search": 1.0,           # 500 requests/hour without a key
+    "arbeitnow-search": 2.0,         # "please do not abuse"; a search reads up to 4 pages
+    "jobicy-search": 10.0,           # terms ask for hourly polling; searches are user-triggered
+    "himalayas-search": 2.0,
+    "adzuna-search": 2.5,            # 25 requests/minute default quota
+    "jsearch-search": 5.0,           # 200 requests/month on the free plan
+    "jobtech-se-search": 1.0, "mycareersfuture-sg-search": 1.0, "jobroom-ch-search": 1.0, "arbeidsplassen-no-search": 1.0,
+    "careerjet-search": 1.0, "reed-search": 1.0,
 }
 DEFAULT_INTERVAL_S = 1.0
 
@@ -69,14 +77,35 @@ class Portal:
     version: str = ""
     description: str = ""
     min_interval_s: float = DEFAULT_INTERVAL_S
+    # Coverage metadata from the SKILL.md frontmatter (see docs/PORTAL-METADATA.md):
+    #   countries: ISO-3166 alpha-2 codes the board serves, or "*" (worldwide aggregator)
+    #   official: a government / public-employment-service board
+    #   requires_env: env vars (API keys) the CLI needs; missing → disabled with a reason
+    #   sponsor_signal: how (if at all) a posting on this board reveals visa sponsorship
+    title: str = ""
+    countries: list[str] = field(default_factory=list)
+    worldwide: bool = False
+    official: bool = False
+    requires_env: list[str] = field(default_factory=list)
+    sponsor_signal: str = ""
+    attribution: str = ""      # text that must be shown next to this board's rows (e.g. "Jobs by Adzuna")
+    fallback: bool = False     # low-quota board: the CRM uses it only when nothing else covers a country
+    disabled_reason: str = ""
     _last_call: float = field(default=0.0, repr=False)
     _lock: asyncio.Lock = field(default_factory=asyncio.Lock, repr=False)
 
+    def covers(self, country: str) -> bool:
+        return self.worldwide or country.upper() in self.countries
+
     def summary(self) -> dict:
         return {
-            "name": self.name, "enabled": self.enabled, "version": self.version,
+            "name": self.name, "title": self.title or self.name.removesuffix("-search"),
+            "enabled": self.enabled, "version": self.version,
             "description": self.description.strip()[:300], "min_interval_s": self.min_interval_s,
             "cli": str(self.cli.relative_to(ROOT)) if self.cli.is_relative_to(ROOT) else str(self.cli),
+            "countries": "*" if self.worldwide else self.countries, "official": self.official,
+            "requires_env": self.requires_env, "sponsor_signal": self.sponsor_signal,
+            "attribution": self.attribution, "fallback": self.fallback, "disabled_reason": self.disabled_reason,
         }
 
 
@@ -107,18 +136,47 @@ def discover(skills_dir: Path = SKILLS_DIR) -> dict[str, Portal]:
         fm = _frontmatter(skill)
         name = str(fm.get("name") or skill.parent.name)
         enabled = fm.get("enabled", True)
+        enabled = enabled if isinstance(enabled, bool) else str(enabled).lower() != "false"
+        raw_cc = fm.get("countries") or []
+        worldwide = raw_cc == "*" or raw_cc == ["*"]
+        countries = [] if worldwide else sorted({str(c).upper() for c in _as_list(raw_cc) if _CC.match(str(c))})
+        requires_env = [str(v) for v in _as_list(fm.get("requires_env") or [])]
+        missing = [v for v in requires_env if not os.environ.get(v)]
+        reason = ""
+        if not enabled:
+            reason = "disabled in SKILL.md"
+        elif missing:
+            enabled, reason = False, "missing_env:" + ",".join(missing)
         portals[name] = Portal(
-            name=name, dir=skill.parent, cli=cli,
-            enabled=enabled if isinstance(enabled, bool) else str(enabled).lower() != "false",
+            name=name, dir=skill.parent, cli=cli, enabled=enabled,
             version=str(fm.get("version", "")), description=str(fm.get("description", "")),
             min_interval_s=MIN_INTERVAL_S.get(name, DEFAULT_INTERVAL_S),
+            title=str(fm.get("title", "") or ""),
+            countries=countries, worldwide=worldwide, official=bool(fm.get("official", False)),
+            requires_env=requires_env, sponsor_signal=str(fm.get("sponsor_signal", "") or ""),
+            attribution=str(fm.get("attribution", "") or ""), fallback=bool(fm.get("fallback", False)),
+            disabled_reason=reason,
         )
     return portals
 
 
+_CC = re.compile(r"^[A-Za-z]{2}$")
+
+
+def _as_list(v) -> list:
+    if isinstance(v, (list, tuple)):
+        # YAML 1.1 turns a bare NO into False (Norway!) — codes should be quoted, but stay safe.
+        return ["NO" if x is False else x for x in v]
+    return [x.strip() for x in str(v).split(",") if x.strip()]
+
+
 def build_search_args(portal: Portal, *, query: str | None, location: str | None, jobage: int | None,
-                      remote: str | None, page: int, limit: int, extra: dict[str, str] | None) -> list[str]:
+                      remote: str | None, page: int, limit: int, extra: dict[str, str] | None,
+                      country: str | None = None) -> list[str]:
     args = ["search", "--format", "json", "--page", str(page), "--limit", str(limit)]
+    # Only worldwide boards take a country; a single-country board's CLI has no such flag.
+    if country and portal.worldwide:
+        args += ["--country", country.upper()]
     # A value starting with "-" would be re-parsed as a flag by the CLIs' shared parseFlags
     # (e.g. "--help" prints usage to stdout with exit 0 → BAD_OUTPUT). Reject it up front.
     for label, value in (("query", query), ("location", location)):

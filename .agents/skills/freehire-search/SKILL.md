@@ -12,6 +12,10 @@ description: >
   "are there any <tech role> jobs in <place>", look up this freehire job posting.
 context: fork
 enabled: true  # set to false to keep this portal installed but have /scrape skip it
+title: "freehire (tech, worldwide)"
+countries: "*"
+official: false
+sponsor_signal: none (tech aggregator; sponsorship only if the description says so)
 allowed-tools: Bash(bun run .agents/skills/freehire-search/cli/src/cli.ts *)
 ---
 

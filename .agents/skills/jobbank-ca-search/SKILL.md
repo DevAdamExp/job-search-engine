@@ -10,6 +10,10 @@ description: >
   Calgary / Montréal, foreign worker jobs Canada, look up this Job Bank posting.
 context: fork
 enabled: true  # set to false to keep this portal installed but have /scrape skip it
+title: "Job Bank (Canada, official)"
+countries: ["CA"]
+official: true
+sponsor_signal: LMIA requested/approved flag on the posting (employer applied for or holds a Labour Market Impact Assessment)
 allowed-tools: Bash(bun run .agents/skills/jobbank-ca-search/cli/src/cli.ts *)
 ---
 

@@ -46,6 +46,38 @@ class DiscoverTests(unittest.TestCase):
         ps = P.discover()
         self.assertIn("linkedin-search", ps)
         self.assertIn("freehire-search", ps)
+        # every shipped portal declares its coverage
+        for p in ps.values():
+            self.assertTrue(p.worldwide or p.countries, p.name)
+        self.assertTrue(ps["jobbank-ca-search"].official)
+        self.assertTrue(ps["jobbank-ca-search"].covers("ca"))
+        self.assertTrue(ps["freehire-search"].covers("PK"))
+        self.assertFalse(ps["jobnet-search"].covers("SE"))
+
+    def test_coverage_metadata_and_missing_env(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            d = root / "keyed-search"; (d / "cli" / "src").mkdir(parents=True)
+            (d / "cli" / "src" / "cli.ts").write_text("// stub")
+            (d / "SKILL.md").write_text("---\nname: keyed-search\nenabled: true\ncountries: [gb, IE, xx1]\n"
+                                        "official: true\nrequires_env: [KEYED_APP_KEY]\nsponsor_signal: none\n---\n")
+            w = root / "world-search"; (w / "cli" / "src").mkdir(parents=True)
+            (w / "cli" / "src" / "cli.ts").write_text("// stub")
+            (w / "SKILL.md").write_text("---\nname: world-search\ncountries: '*'\n---\n")
+            with mock.patch.dict(os.environ, {}, clear=False):
+                os.environ.pop("KEYED_APP_KEY", None)
+                ps = P.discover(root)
+                k = ps["keyed-search"]
+                self.assertFalse(k.enabled)
+                self.assertEqual(k.disabled_reason, "missing_env:KEYED_APP_KEY")
+                self.assertEqual(k.countries, ["GB", "IE"])          # upper-cased, junk dropped
+                self.assertEqual(k.summary()["countries"], ["GB", "IE"])
+                self.assertTrue(k.official)
+            with mock.patch.dict(os.environ, {"KEYED_APP_KEY": "x"}):
+                self.assertTrue(P.discover(root)["keyed-search"].enabled)
+            w = ps["world-search"]
+            self.assertTrue(w.worldwide and w.covers("ZW") and w.summary()["countries"] == "*")
+            self.assertFalse(w.official)
 
 
 class ArgsTests(unittest.TestCase):
@@ -58,6 +90,16 @@ class ArgsTests(unittest.TestCase):
         self.assertEqual(args, ["search", "--format", "json", "--page", "2", "--limit", "10",
                                 "--query", "nurse", "--location", "Leeds", "--jobage", "14",
                                 "--remote", "remote", "--seniority", "senior"])
+
+    def test_country_goes_only_to_worldwide_boards(self):
+        world = P.Portal(name="w-search", dir=Path("."), cli=Path("cli.ts"), enabled=True, worldwide=True)
+        local = P.Portal(name="l-search", dir=Path("."), cli=Path("cli.ts"), enabled=True, countries=["SE"])
+        a = P.build_search_args(world, query="q", location=None, jobage=None, remote=None, page=1, limit=5, extra=None, country="pk")
+        self.assertEqual(a[a.index("--country") + 1], "PK")
+        b = P.build_search_args(local, query="q", location=None, jobage=None, remote=None, page=1, limit=5, extra=None, country="pk")
+        self.assertNotIn("--country", b)
+        with self.assertRaises(P.PortalError):   # reserved: a caller can't smuggle it through extra
+            P.build_search_args(local, query="q", location=None, jobage=None, remote=None, page=1, limit=5, extra={"country": "PK"})
 
     def test_location_mapping_per_portal(self):
         fh = P.build_search_args(self._p("freehire-search"), query="go", location="Berlin", jobage=None,
@@ -166,6 +208,17 @@ class HttpTests(unittest.TestCase):
     def tearDown(self):
         self.rr.stop(); self.pp.stop(); self.env.stop()
 
+    def test_portals_by_country(self):
+        self.portals["ok-search"].countries = ["GB"]; self.portals["ok-search"].official = True
+        self.portals["bad-search"].worldwide = True
+        r = self.c.get("/portals", params={"country": "gb"}, headers=self.h)
+        self.assertEqual(r.status_code, 200, r.text)
+        self.assertEqual([p["name"] for p in r.json()["portals"]], ["ok-search", "bad-search"])   # official first
+        self.assertEqual([p["name"] for p in self.c.get("/portals", params={"country": "PK"}, headers=self.h).json()["portals"]],
+                         ["bad-search"])
+        self.assertEqual(self.c.get("/portals", params={"country": "GBR"}, headers=self.h).status_code, 422)
+        self.assertEqual(len(self.c.get("/portals", headers=self.h).json()["portals"]), 3)
+
     def test_token_required(self):
         self.assertEqual(self.c.get("/portals").status_code, 401)
         self.assertEqual(self.c.get("/portals", headers={"X-Engine-Token": "nope"}).status_code, 401)
@@ -193,6 +246,10 @@ class HttpTests(unittest.TestCase):
         # a leading-dash query is a 422 with the reason, not a 502
         r = self.c.post("/search", json={"portal": "ok-search", "query": "--help"}, headers=self.h)
         self.assertEqual(r.status_code, 422, r.text)
+
+    def test_country_field_is_validated(self):
+        self.assertEqual(self.c.post("/search", json={"portal": "ok-search", "query": "x", "country": "GBR"}, headers=self.h).status_code, 422)
+        self.assertEqual(self.c.post("/search/multi", json={"portals": ["ok-search"], "query": "x", "country": "gb"}, headers=self.h).status_code, 200)
 
     def test_validation(self):
         self.assertEqual(self.c.post("/search", json={"portal": "nope", "query": "x"}, headers=self.h).status_code, 404)

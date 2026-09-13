@@ -62,6 +62,7 @@ class SearchRequest(BaseModel):
     portal: str = Field(min_length=1, max_length=60)
     query: str | None = Field(default=None, max_length=200)
     location: str | None = Field(default=None, max_length=120)
+    country: str | None = Field(default=None, min_length=2, max_length=2, pattern=r"^[A-Za-z]{2}$")  # ISO-3166 alpha-2
     jobage: int | None = None          # days: 1 | 7 | 14 | 30
     remote: Literal["remote", "hybrid", "onsite"] | None = None
     page: int = Field(default=1, ge=1, le=50)
@@ -73,6 +74,7 @@ class MultiSearchRequest(BaseModel):
     portals: list[str] = Field(min_length=1, max_length=10)
     query: str | None = Field(default=None, max_length=200)
     location: str | None = Field(default=None, max_length=120)
+    country: str | None = Field(default=None, min_length=2, max_length=2, pattern=r"^[A-Za-z]{2}$")
     jobage: int | None = None
     remote: Literal["remote", "hybrid", "onsite"] | None = None
     limit: int = Field(default=20, ge=1, le=50)
@@ -86,7 +88,7 @@ def _check_jobage(v: int | None) -> None:
 
 async def _search_one(p: P.Portal, req: SearchRequest) -> dict:
     args = P.build_search_args(
-        p, query=req.query, location=req.location, jobage=req.jobage, remote=req.remote,
+        p, query=req.query, location=req.location, country=req.country, jobage=req.jobage, remote=req.remote,
         page=req.page, limit=req.limit, extra=req.extra,
     )
     raw = await P.run_cli(p, args)
@@ -100,8 +102,16 @@ async def health() -> dict:
 
 
 @app.get("/portals", dependencies=[Depends(_require_token)])
-async def list_portals() -> dict:
-    return {"portals": [p.summary() for p in _PORTALS.values()]}
+async def list_portals(country: str | None = None) -> dict:
+    """Every installed board with its coverage metadata. `?country=XX` keeps only the boards
+    that serve that country (official boards first, then worldwide aggregators)."""
+    ps = list(_PORTALS.values())
+    if country:
+        cc = country.strip().upper()
+        if not P._CC.match(cc):
+            raise HTTPException(422, "country must be an ISO-3166 alpha-2 code")
+        ps = sorted((p for p in ps if p.covers(cc)), key=lambda p: (not p.official, p.worldwide, p.name))
+    return {"portals": [p.summary() for p in ps]}
 
 
 @app.post("/search", dependencies=[Depends(_require_token)])
@@ -125,8 +135,8 @@ async def search_multi(req: MultiSearchRequest) -> dict:
             return {"portal": name, "meta": {"count": 0}, "results": [], "error": {"code": "UNKNOWN_PORTAL", "message": "unknown portal"}}
         if not p.enabled:
             return {"portal": name, "meta": {"count": 0}, "results": [], "error": {"code": "DISABLED", "message": "portal is disabled"}}
-        sub = SearchRequest(portal=p.name, query=req.query, location=req.location, jobage=req.jobage,
-                            remote=req.remote, limit=req.limit, extra=req.extra.get(p.name, {}))
+        sub = SearchRequest(portal=p.name, query=req.query, location=req.location, country=req.country,
+                            jobage=req.jobage, remote=req.remote, limit=req.limit, extra=req.extra.get(p.name, {}))
         try:
             return await _search_one(p, sub)
         except P.PortalError as e:

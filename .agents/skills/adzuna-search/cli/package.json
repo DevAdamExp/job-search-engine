@@ -1,0 +1,17 @@
+{
+  "name": "adzuna-cli",
+  "version": "1.0.0",
+  "description": "Search Adzuna's job API in 19 countries. Needs a free Adzuna developer key (ADZUNA_APP_ID / ADZUNA_APP_KEY). Every displayed result must carry the \"Jobs by Adzuna\" attribution.",
+  "type": "module",
+  "main": "src/cli.ts",
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/bun": "1.3.14"
+  }
+}

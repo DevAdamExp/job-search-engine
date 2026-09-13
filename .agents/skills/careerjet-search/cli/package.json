@@ -1,0 +1,17 @@
+{
+  "name": "careerjet-cli",
+  "version": "1.0.0",
+  "description": "Search Careerjet's partner API across 62 countries (including Pakistan, the Gulf, Bangladesh, the Philippines, Vietnam). Needs a free Careerjet publisher key (CAREERJET_API_KEY); the end user's IP and user agent must be passed.",
+  "type": "module",
+  "main": "src/cli.ts",
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/bun": "1.3.14"
+  }
+}

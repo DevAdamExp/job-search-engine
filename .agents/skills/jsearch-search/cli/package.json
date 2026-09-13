@@ -1,0 +1,17 @@
+{
+  "name": "jsearch-cli",
+  "version": "1.0.0",
+  "description": "Search Google-for-Jobs results through the JSearch API on RapidAPI, worldwide. Needs a RapidAPI key (RAPIDAPI_KEY); the free plan is 200 requests per month, so the CRM only uses it for countries no other board covers.",
+  "type": "module",
+  "main": "src/cli.ts",
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/bun": "1.3.14"
+  }
+}

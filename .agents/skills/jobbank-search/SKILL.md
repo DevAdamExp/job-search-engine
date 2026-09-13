@@ -20,6 +20,10 @@ description: >
   projektleder stilling, konsulent job, data analyse job.
 context: fork
 enabled: false  # Danish demo portal - ships opt-in; /setup enables it when your market is Denmark, or set true here yourself
+title: "Jobbank.dk (Denmark)"
+countries: ["DK"]
+official: false
+sponsor_signal: none
 allowed-tools: Bash(bun run .agents/skills/jobbank-search/cli/src/cli.ts *)
 ---
 

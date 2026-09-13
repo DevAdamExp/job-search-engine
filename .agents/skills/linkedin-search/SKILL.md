@@ -12,6 +12,10 @@ description: >
   job posting.
 context: fork
 enabled: false  # off for the CRM engine (LinkedIn: personal-use terms; Danish boards: not our markets). Flip to true to opt in.
+title: "LinkedIn (public listings)"
+countries: "*"
+official: false
+sponsor_signal: none (wording in the description only)
 allowed-tools: Bash(bun run .agents/skills/linkedin-search/cli/src/cli.ts *)
 ---
 

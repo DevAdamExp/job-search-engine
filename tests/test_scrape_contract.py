@@ -16,7 +16,9 @@ no company/location/date keys until both were normalized.
 
 {helpers.ts, commands/search.ts} are the two files where every registered
 CLI's search output currently lives (HTML-parsing portals normalize in
-helpers.ts, API portals in commands/search.ts). detail.ts is deliberately
+helpers.ts, API portals in commands/search.ts); the CRM engine's generated
+JSON-API portals keep it in src/source.ts instead (one hand-written file per
+board, see .agents/skills/*/cli/src/source.ts). detail.ts is deliberately
 excluded: the contract is about the search output /scrape consumes.
 """
 
@@ -64,7 +66,9 @@ class ScrapeSearchOutputContractTests(unittest.TestCase):
         for portal in PORTAL_CLIS:
             search_ts = portal / "cli" / "src" / "commands" / "search.ts"
             if not search_ts.exists():
-                failures.append(f"{portal.name}: no cli/src/commands/search.ts")
+                search_ts = portal / "cli" / "src" / "source.ts"
+            if not search_ts.exists():
+                failures.append(f"{portal.name}: no cli/src/commands/search.ts or cli/src/source.ts")
                 continue
             source = search_output_source(search_ts)
             emitted = set(re.findall(r"^\s*([a-zA-Z_][a-zA-Z0-9_]*):", source, re.MULTILINE))
