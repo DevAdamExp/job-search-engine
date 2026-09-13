@@ -18,7 +18,7 @@ Boards: 14 — 5 official, 5 open aggregators, 3 needing a free key, 1 fallback.
 | Arbeitnow (Germany, UK, France, Australia) | open | AU, DE, FR, GB | weak hint only (the board's visa_sponsorship filter exists but the field never arrives) |
 | freehire (tech, worldwide) | open | worldwide | none (tech aggregator; sponsorship only if the description says so) |
 | Himalayas (remote, worldwide) | open | worldwide | none (remote roles; locationRestrictions says which countries may apply) |
-| Jobicy (remote, 49 regions) | open | 49 countries | none (remote roles by region) |
+| Jobicy (remote, 48 regions) | open | 48 countries | none (remote roles by region) |
 | The Muse (41 countries, US-heavy) | open | 41 countries | none |
 
 ## By country
@@ -30,7 +30,7 @@ Worldwide open boards: freehire (tech, worldwide), Himalayas (remote, worldwide)
 | country | region | official | open | keyed | fallback only |
 |---|---|---|---|---|---|
 | Algeria (DZ) | Northern Africa | — | — | — | yes |
-| Egypt (EG) | Northern Africa | — | Jobicy (remote, 49 regions) | — |  |
+| Egypt (EG) | Northern Africa | — | Jobicy (remote, 48 regions) | — |  |
 | Libya (LY) | Northern Africa | — | — | — | yes |
 | Morocco (MA) | Northern Africa | — | — | Careerjet (62 countries) |  |
 | Sudan (SD) | Northern Africa | — | — | — | yes |
@@ -81,7 +81,7 @@ Worldwide open boards: freehire (tech, worldwide), Himalayas (remote, worldwide)
 | Seychelles (SC) | Sub-Saharan Africa | — | — | — | yes |
 | Sierra Leone (SL) | Sub-Saharan Africa | — | — | — | yes |
 | Somalia (SO) | Sub-Saharan Africa | — | — | — | yes |
-| South Africa (ZA) | Sub-Saharan Africa | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| South Africa (ZA) | Sub-Saharan Africa | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | South Sudan (SS) | Sub-Saharan Africa | — | — | — | yes |
 | São Tomé and Príncipe (ST) | Sub-Saharan Africa | — | — | — | yes |
 | Tanzania (TZ) | Sub-Saharan Africa | — | — | — | yes |
@@ -91,7 +91,7 @@ Worldwide open boards: freehire (tech, worldwide), Himalayas (remote, worldwide)
 | Zimbabwe (ZW) | Sub-Saharan Africa | — | — | — | yes |
 | Anguilla (AI) | Latin America and the Caribbean | — | — | — | yes |
 | Antigua and Barbuda (AG) | Latin America and the Caribbean | — | — | — | yes |
-| Argentina (AR) | Latin America and the Caribbean | — | Jobicy (remote, 49 regions) | Careerjet (62 countries) |  |
+| Argentina (AR) | Latin America and the Caribbean | — | Jobicy (remote, 48 regions) | Careerjet (62 countries) |  |
 | Aruba (AW) | Latin America and the Caribbean | — | — | — | yes |
 | Bahamas (BS) | Latin America and the Caribbean | — | — | — | yes |
 | Barbados (BB) | Latin America and the Caribbean | — | — | — | yes |
@@ -99,11 +99,11 @@ Worldwide open boards: freehire (tech, worldwide), Himalayas (remote, worldwide)
 | Bolivia (BO) | Latin America and the Caribbean | — | — | Careerjet (62 countries) |  |
 | Bonaire, Sint Eustatius and Saba (BQ) | Latin America and the Caribbean | — | — | — | yes |
 | Bouvet Island (BV) | Latin America and the Caribbean | — | — | — | yes |
-| Brazil (BR) | Latin America and the Caribbean | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Brazil (BR) | Latin America and the Caribbean | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | British Virgin Islands (VG) | Latin America and the Caribbean | — | — | — | yes |
 | Cayman Islands (KY) | Latin America and the Caribbean | — | — | — | yes |
-| Chile (CL) | Latin America and the Caribbean | — | Jobicy (remote, 49 regions) | Careerjet (62 countries) |  |
-| Colombia (CO) | Latin America and the Caribbean | — | Jobicy (remote, 49 regions) | Careerjet (62 countries) |  |
+| Chile (CL) | Latin America and the Caribbean | — | Jobicy (remote, 48 regions) | Careerjet (62 countries) |  |
+| Colombia (CO) | Latin America and the Caribbean | — | Jobicy (remote, 48 regions) | Careerjet (62 countries) |  |
 | Costa Rica (CR) | Latin America and the Caribbean | — | — | Careerjet (62 countries) |  |
 | Cuba (CU) | Latin America and the Caribbean | — | — | — | yes |
 | Curaçao (CW) | Latin America and the Caribbean | — | — | — | yes |
@@ -121,12 +121,12 @@ Worldwide open boards: freehire (tech, worldwide), Himalayas (remote, worldwide)
 | Honduras (HN) | Latin America and the Caribbean | — | — | — | yes |
 | Jamaica (JM) | Latin America and the Caribbean | — | — | — | yes |
 | Martinique (MQ) | Latin America and the Caribbean | — | — | — | yes |
-| Mexico (MX) | Latin America and the Caribbean | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Mexico (MX) | Latin America and the Caribbean | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Montserrat (MS) | Latin America and the Caribbean | — | — | — | yes |
 | Nicaragua (NI) | Latin America and the Caribbean | — | — | — | yes |
 | Panama (PA) | Latin America and the Caribbean | — | — | Careerjet (62 countries) |  |
 | Paraguay (PY) | Latin America and the Caribbean | — | — | Careerjet (62 countries) |  |
-| Peru (PE) | Latin America and the Caribbean | — | Jobicy (remote, 49 regions) | Careerjet (62 countries) |  |
+| Peru (PE) | Latin America and the Caribbean | — | Jobicy (remote, 48 regions) | Careerjet (62 countries) |  |
 | Puerto Rico (PR) | Latin America and the Caribbean | — | — | Careerjet (62 countries) |  |
 | Saint Barthélemy (BL) | Latin America and the Caribbean | — | — | — | yes |
 | Saint Kitts and Nevis (KN) | Latin America and the Caribbean | — | — | — | yes |
@@ -142,85 +142,85 @@ Worldwide open boards: freehire (tech, worldwide), Himalayas (remote, worldwide)
 | Uruguay (UY) | Latin America and the Caribbean | — | — | Careerjet (62 countries) |  |
 | Venezuela (VE) | Latin America and the Caribbean | — | — | Careerjet (62 countries) |  |
 | Bermuda (BM) | Northern America | — | — | — | yes |
-| Canada (CA) | Northern America | Job Bank (Canada, official) | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Canada (CA) | Northern America | Job Bank (Canada, official) | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Greenland (GL) | Northern America | — | — | — | yes |
 | Saint Pierre and Miquelon (PM) | Northern America | — | — | — | yes |
-| United States (US) | Northern America | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| United States (US) | Northern America | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Kazakhstan (KZ) | Central Asia | — | — | — | yes |
 | Kyrgyzstan (KG) | Central Asia | — | — | — | yes |
 | Tajikistan (TJ) | Central Asia | — | — | — | yes |
 | Turkmenistan (TM) | Central Asia | — | — | — | yes |
 | Uzbekistan (UZ) | Central Asia | — | — | — | yes |
 | China (CN) | Eastern Asia | — | The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
-| Hong Kong (HK) | Eastern Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
-| Japan (JP) | Eastern Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Hong Kong (HK) | Eastern Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Japan (JP) | Eastern Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Macao (MO) | Eastern Asia | — | — | — | yes |
 | Mongolia (MN) | Eastern Asia | — | — | — | yes |
 | North Korea (KP) | Eastern Asia | — | — | — | yes |
-| South Korea (KR) | Eastern Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| South Korea (KR) | Eastern Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Brunei (BN) | South-eastern Asia | — | — | — | yes |
 | Cambodia (KH) | South-eastern Asia | — | — | — | yes |
-| Indonesia (ID) | South-eastern Asia | — | Jobicy (remote, 49 regions) | — |  |
+| Indonesia (ID) | South-eastern Asia | — | Jobicy (remote, 48 regions) | — |  |
 | Laos (LA) | South-eastern Asia | — | — | — | yes |
-| Malaysia (MY) | South-eastern Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Malaysia (MY) | South-eastern Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Myanmar (MM) | South-eastern Asia | — | — | — | yes |
-| Philippines (PH) | South-eastern Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
-| Singapore (SG) | South-eastern Asia | MyCareersFuture (Singapore, official) | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
-| Thailand (TH) | South-eastern Asia | — | Jobicy (remote, 49 regions) | — |  |
+| Philippines (PH) | South-eastern Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Singapore (SG) | South-eastern Asia | MyCareersFuture (Singapore, official) | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Thailand (TH) | South-eastern Asia | — | Jobicy (remote, 48 regions) | — |  |
 | Timor-Leste (TL) | South-eastern Asia | — | — | — | yes |
-| Vietnam (VN) | South-eastern Asia | — | Jobicy (remote, 49 regions) | Careerjet (62 countries) |  |
+| Vietnam (VN) | South-eastern Asia | — | Jobicy (remote, 48 regions) | Careerjet (62 countries) |  |
 | Afghanistan (AF) | Southern Asia | — | — | — | yes |
-| Bangladesh (BD) | Southern Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Bangladesh (BD) | Southern Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Bhutan (BT) | Southern Asia | — | — | — | yes |
-| India (IN) | Southern Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| India (IN) | Southern Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Iran (IR) | Southern Asia | — | — | — | yes |
 | Maldives (MV) | Southern Asia | — | — | — | yes |
 | Nepal (NP) | Southern Asia | — | — | — | yes |
-| Pakistan (PK) | Southern Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Pakistan (PK) | Southern Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Sri Lanka (LK) | Southern Asia | — | — | — | yes |
 | Armenia (AM) | Western Asia | — | — | — | yes |
 | Azerbaijan (AZ) | Western Asia | — | — | — | yes |
-| Bahrain (BH) | Western Asia | — | Jobicy (remote, 49 regions) | — |  |
+| Bahrain (BH) | Western Asia | — | Jobicy (remote, 48 regions) | — |  |
 | Cyprus (CY) | Western Asia | — | — | — | yes |
 | Georgia (GE) | Western Asia | — | — | — | yes |
 | Iraq (IQ) | Western Asia | — | — | — | yes |
 | Israel (IL) | Western Asia | — | — | — | yes |
 | Jordan (JO) | Western Asia | — | — | — | yes |
-| Kuwait (KW) | Western Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Kuwait (KW) | Western Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Lebanon (LB) | Western Asia | — | — | — | yes |
-| Oman (OM) | Western Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Oman (OM) | Western Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Palestine (PS) | Western Asia | — | — | — | yes |
-| Qatar (QA) | Western Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
-| Saudi Arabia (SA) | Western Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Qatar (QA) | Western Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Saudi Arabia (SA) | Western Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Syria (SY) | Western Asia | — | — | — | yes |
-| Türkiye (TR) | Western Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
-| United Arab Emirates (AE) | Western Asia | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Türkiye (TR) | Western Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| United Arab Emirates (AE) | Western Asia | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Yemen (YE) | Western Asia | — | — | — | yes |
 | Belarus (BY) | Eastern Europe | — | — | — | yes |
 | Bulgaria (BG) | Eastern Europe | — | — | — | yes |
-| Czechia (CZ) | Eastern Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Czechia (CZ) | Eastern Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Hungary (HU) | Eastern Europe | — | — | Careerjet (62 countries) |  |
 | Moldova (MD) | Eastern Europe | — | — | — | yes |
-| Poland (PL) | Eastern Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Poland (PL) | Eastern Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Romania (RO) | Eastern Europe | — | — | — | yes |
 | Russia (RU) | Eastern Europe | — | — | Careerjet (62 countries) |  |
 | Slovakia (SK) | Eastern Europe | — | — | Careerjet (62 countries) |  |
 | Ukraine (UA) | Eastern Europe | — | — | Careerjet (62 countries) |  |
-| Denmark (DK) | Northern Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Denmark (DK) | Northern Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Estonia (EE) | Northern Europe | — | — | — | yes |
 | Faroe Islands (FO) | Northern Europe | — | — | — | yes |
-| Finland (FI) | Northern Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Finland (FI) | Northern Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Guernsey (GG) | Northern Europe | — | — | — | yes |
 | Iceland (IS) | Northern Europe | — | — | — | yes |
-| Ireland (IE) | Northern Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Ireland (IE) | Northern Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Isle of Man (IM) | Northern Europe | — | — | — | yes |
 | Jersey (JE) | Northern Europe | — | — | — | yes |
 | Latvia (LV) | Northern Europe | — | — | — | yes |
 | Lithuania (LT) | Northern Europe | — | — | — | yes |
-| Norway (NO) | Northern Europe | Arbeidsplassen (Norway, official) | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Norway (NO) | Northern Europe | Arbeidsplassen (Norway, official) | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Svalbard and Jan Mayen (SJ) | Northern Europe | — | — | — | yes |
-| Sweden (SE) | Northern Europe | Platsbanken (Sweden, official) | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
-| United Kingdom (GB) | Northern Europe | — | Arbeitnow (Germany, UK, France, Australia), Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries), Reed (United Kingdom) |  |
+| Sweden (SE) | Northern Europe | Platsbanken (Sweden, official) | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| United Kingdom (GB) | Northern Europe | — | Arbeitnow (Germany, UK, France, Australia), Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries), Reed (United Kingdom) |  |
 | Åland Islands (AX) | Northern Europe | — | — | — | yes |
 | Albania (AL) | Southern Europe | — | — | — | yes |
 | Andorra (AD) | Southern Europe | — | — | — | yes |
@@ -228,30 +228,30 @@ Worldwide open boards: freehire (tech, worldwide), Himalayas (remote, worldwide)
 | Croatia (HR) | Southern Europe | — | — | — | yes |
 | Gibraltar (GI) | Southern Europe | — | — | — | yes |
 | Greece (GR) | Southern Europe | — | — | — | yes |
-| Italy (IT) | Southern Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Italy (IT) | Southern Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Malta (MT) | Southern Europe | — | — | — | yes |
 | Montenegro (ME) | Southern Europe | — | — | — | yes |
 | North Macedonia (MK) | Southern Europe | — | — | — | yes |
-| Portugal (PT) | Southern Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
+| Portugal (PT) | Southern Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | San Marino (SM) | Southern Europe | — | — | — | yes |
 | Serbia (RS) | Southern Europe | — | — | — | yes |
 | Slovenia (SI) | Southern Europe | — | — | — | yes |
-| Spain (ES) | Southern Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Spain (ES) | Southern Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Vatican City (VA) | Southern Europe | — | — | — | yes |
-| Austria (AT) | Western Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
-| Belgium (BE) | Western Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
-| France (FR) | Western Europe | — | Arbeitnow (Germany, UK, France, Australia), Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
-| Germany (DE) | Western Europe | — | Arbeitnow (Germany, UK, France, Australia), Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Austria (AT) | Western Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Belgium (BE) | Western Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| France (FR) | Western Europe | — | Arbeitnow (Germany, UK, France, Australia), Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Germany (DE) | Western Europe | — | Arbeitnow (Germany, UK, France, Australia), Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Liechtenstein (LI) | Western Europe | — | — | — | yes |
 | Luxembourg (LU) | Western Europe | — | The Muse (41 countries, US-heavy) | Careerjet (62 countries) |  |
 | Monaco (MC) | Western Europe | — | — | — | yes |
-| Netherlands (NL) | Western Europe | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
-| Switzerland (CH) | Western Europe | job-room.ch (Switzerland, official) | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
-| Australia (AU) | Australia and New Zealand | — | Arbeitnow (Germany, UK, France, Australia), Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Netherlands (NL) | Western Europe | — | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Switzerland (CH) | Western Europe | job-room.ch (Switzerland, official) | Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| Australia (AU) | Australia and New Zealand | — | Arbeitnow (Germany, UK, France, Australia), Jobicy (remote, 48 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Christmas Island (CX) | Australia and New Zealand | — | — | — | yes |
 | Cocos (Keeling) Islands (CC) | Australia and New Zealand | — | — | — | yes |
 | Heard and McDonald Islands (HM) | Australia and New Zealand | — | — | — | yes |
-| New Zealand (NZ) | Australia and New Zealand | — | Jobicy (remote, 49 regions), The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
+| New Zealand (NZ) | Australia and New Zealand | — | The Muse (41 countries, US-heavy) | Adzuna (19 countries), Careerjet (62 countries) |  |
 | Norfolk Island (NF) | Australia and New Zealand | — | — | — | yes |
 | Fiji (FJ) | Melanesia | — | — | — | yes |
 | New Caledonia (NC) | Melanesia | — | — | — | yes |
