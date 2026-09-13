@@ -5,15 +5,16 @@ description: >
   Search Jobicy's remote-jobs API by tag and region. No key; credit + link back required; poll at most hourly.
 context: fork
 enabled: true
-title: "Jobicy (remote, worldwide)"
-countries: "*"
+title: "Jobicy (remote, 49 regions)"
+countries: ["AE", "AR", "AT", "AU", "BD", "BE", "BH", "BR", "CA", "CH", "CL", "CO", "CZ", "DE", "DK", "EG", "ES", "FI", "FR", "GB", "HK", "ID", "IE", "IN", "IT", "JP", "KR", "KW", "MX", "MY", "NL", "NO", "NZ", "OM", "PE", "PH", "PK", "PL", "PT", "QA", "SA", "SE", "SG", "TH", "TR", "TW", "US", "VN", "ZA"]
 official: false
 requires_env: []
 sponsor_signal: none (remote roles by region)
+attribution: "via Jobicy"
 allowed-tools: Bash(bun run .agents/skills/jobicy-search/cli/src/cli.ts *)
 ---
 
-# Jobicy (remote, worldwide)
+# Jobicy (remote, 49 regions)
 
 Search Jobicy's remote-jobs API by tag and region. No key; credit + link back required; poll at most hourly.
 

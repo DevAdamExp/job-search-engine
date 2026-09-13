@@ -105,7 +105,9 @@ export function withinDays(date: string | null, days: number | undefined, today 
   if (!date) return false
   const t = Date.parse(date + "T00:00:00Z")
   if (isNaN(t)) return false
-  return (today.getTime() - t) / 86400000 <= days
+  // whole calendar days (UTC): a posting dated yesterday is "within 1 day" all of today
+  const todayMidnight = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+  return Math.round((todayMidnight - t) / 86400000) <= days
 }
 
 /** Strip HTML to readable text (block tags → newlines, entities decoded). Null for empty input. */
@@ -123,9 +125,10 @@ export function cleanHtml(html: string | null | undefined): string | null {
 }
 
 export function money(min: unknown, max: unknown, currency?: string | null, period?: string | null): string | null {
-  const a = typeof min === "number" ? min : null
-  const b = typeof max === "number" ? max : null
+  let a = typeof min === "number" ? min : null
+  let b = typeof max === "number" ? max : null
   if (a == null && b == null) return null
+  if (a != null && b != null && a > b) [a, b] = [b, a]
   const cur = currency ? `${currency} ` : ""
   const range = a != null && b != null && a !== b ? `${a.toLocaleString("en")}–${b.toLocaleString("en")}` : (a ?? b)!.toLocaleString("en")
   return `${cur}${range}${period ? ` ${period}` : ""}`

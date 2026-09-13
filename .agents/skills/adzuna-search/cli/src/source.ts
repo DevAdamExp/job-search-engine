@@ -44,7 +44,7 @@ export function toRow(j: Job): Row {
     location: j.location?.display_name || null,
     date: isoDate(j.created),
     url: j.redirect_url || "",
-    salary: money(j.salary_min ?? null, j.salary_max ?? null, null, "per year") ,
+    salary: money(j.salary_min ?? null, j.salary_max ?? null, null, null),
     salary_predicted: j.salary_is_predicted === "1" || j.salary_is_predicted === 1,
     contract_time: j.contract_time || null,
     contract_type: j.contract_type || null,

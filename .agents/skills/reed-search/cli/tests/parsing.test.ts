@@ -47,7 +47,7 @@ describe("reed", () => {
     expect(out.meta.total).toBe(321)
     const r = out.results[0]
     expect(r.id).toBe("55512345"); expect(r.date).toBe("2026-09-12"); expect(r.deadline).toBe("2026-10-10")
-    expect(r.salary).toBe("GBP 30,000–36,000 per year"); expect(r.company).toBe("Care Group Ltd")
+    expect(r.salary).toBe("GBP 30,000–36,000"); expect(r.company).toBe("Care Group Ltd")
   })
   test("UK only; ids", () => {
     expect(S.validate({ ...O, query: "x", country: "IE" })).not.toBeNull()

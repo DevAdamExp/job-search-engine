@@ -14,7 +14,7 @@ const BASE = (process.env.JOBICY_API_URL ?? "").trim().replace(/\/+$/, "") || "h
 const GEO: Record<string, string> = {
   GB: "uk", US: "usa", CA: "canada", DE: "germany", FR: "france", ES: "spain", NL: "netherlands", AU: "australia", SG: "singapore",
   IE: "ireland", IT: "italy", PT: "portugal", PL: "poland", SE: "sweden", NO: "norway", DK: "denmark", FI: "finland", AT: "austria",
-  CH: "switzerland", BE: "belgium", CZ: "czechia", JP: "japan", IN: "india", BR: "brazil", MX: "mexico", AR: "argentina", NZ: "australia",
+  CH: "switzerland", BE: "belgium", CZ: "czechia", JP: "japan", IN: "india", BR: "brazil", MX: "mexico", AR: "argentina",
   AE: "emea", SA: "emea", QA: "emea", KW: "emea", OM: "emea", BH: "emea", ZA: "emea", EG: "emea", TR: "emea", PK: "apac", BD: "apac",
   PH: "apac", MY: "apac", ID: "apac", VN: "apac", TH: "apac", HK: "apac", TW: "apac", KR: "apac", CL: "latam", CO: "latam", PE: "latam",
 }

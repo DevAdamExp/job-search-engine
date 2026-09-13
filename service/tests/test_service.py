@@ -98,6 +98,12 @@ class ArgsTests(unittest.TestCase):
         self.assertEqual(a[a.index("--country") + 1], "PK")
         b = P.build_search_args(local, query="q", location=None, jobage=None, remote=None, page=1, limit=5, extra=None, country="pk")
         self.assertNotIn("--country", b)
+        multi = P.Portal(name="m-search", dir=Path("."), cli=Path("cli.ts"), enabled=True, countries=["GB", "PK", "AE"])
+        c = P.build_search_args(multi, query="q", location=None, jobage=None, remote=None, page=1, limit=5, extra=None, country="pk")
+        self.assertEqual(c[c.index("--country") + 1], "PK")          # multi-country APIs must not default to GB
+        ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+        d = P.build_search_args(multi, query="q", location=None, jobage=None, remote=None, page=1, limit=5, extra={"user-agent": ua})
+        self.assertIn(ua, d)                                          # a real browser UA (117 chars) is accepted
         with self.assertRaises(P.PortalError):   # reserved: a caller can't smuggle it through extra
             P.build_search_args(local, query="q", location=None, jobage=None, remote=None, page=1, limit=5, extra={"country": "PK"})
 

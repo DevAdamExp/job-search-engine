@@ -41,7 +41,7 @@ export function toRow(j: Job): Row {
     date: isoDate(j.date),
     url: j.jobUrl || `https://www.reed.co.uk/jobs/${j.jobId}`,
     deadline: isoDate(j.expirationDate),
-    salary: money(j.minimumSalary ?? null, j.maximumSalary ?? null, j.currency || "GBP", "per year"),
+    salary: money(j.minimumSalary ?? null, j.maximumSalary ?? null, j.currency || "GBP", null),
     applications: j.applications ?? null,
     contract_type: j.contractType || null,
     job_type: j.jobType || null,

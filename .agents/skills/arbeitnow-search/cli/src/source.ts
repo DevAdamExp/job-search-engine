@@ -5,14 +5,14 @@ import { CliError, cleanHtml, fetchJson, isoDate, matchesQuery, withinDays, type
 
 export const NAME = "arbeitnow-search"
 export const SUMMARY = "Arbeitnow job feed (DE / GB / FR / AU; no key)"
-export const NOTES = `Scans up to 4 feed pages (1,000 newest jobs) per search and keeps rows whose title, tags or
+export const NOTES = `Scans up to 3 feed pages (750 newest jobs) per search and keeps rows whose title, tags or
 description contain every keyword and whose location mentions --location or --country. The board's
 visa_sponsorship filter is exposed as --visa-sponsorship but its answer cannot be verified (the field
 never appears in rows), so treat it as a hint, never a fact. Terms: link back to arbeitnow.com.`
 export const EXTRA_FLAGS: Record<string, string> = { "visa-sponsorship": "true — ask the feed for its (unverifiable) visa-sponsorship subset" }
 
 const BASE = (process.env.ARBEITNOW_API_URL ?? "").trim().replace(/\/+$/, "") || "https://www.arbeitnow.com"
-const SCAN_PAGES = 4
+const SCAN_PAGES = 3   // 3 × ~2 MB pages keeps a search well inside the engine's 60 s budget
 
 const COUNTRY_WORDS: Record<string, string[]> = {
   DE: ["deutschland", "germany", "berlin", "münchen", "munich", "hamburg", "frankfurt", "köln", "cologne", "stuttgart", "düsseldorf", "leipzig", "dresden", "hannover", "nürnberg", "bremen"],
@@ -64,7 +64,7 @@ function placeMatches(loc: string | null, o: SearchOpts): boolean {
 
 export function mapSearch(body: Body | null, o: SearchOpts): SearchResult {
   const rows = (body?.data ?? [])
-    .filter((j) => matchesQuery(o.query, j.title, (j.tags ?? []).join(" "), cleanHtml(j.description)))
+    .filter((j) => !o.query || matchesQuery(o.query, j.title, (j.tags ?? []).join(" ")) || matchesQuery(o.query, cleanHtml(j.description)))
     .filter((j) => placeMatches(j.location ?? null, o))
     .map(toRow)
     .filter((r) => withinDays(r.date, o.jobage))
@@ -84,7 +84,7 @@ export async function search(o: SearchOpts): Promise<SearchResult> {
   for (let i = 0; i < SCAN_PAGES; i++) {
     const p = new URLSearchParams({ page: String(first + i) })
     if (o.extra["visa-sponsorship"]) p.set("visa_sponsorship", "true")
-    const { body } = await fetchJson<Body>(`${BASE}/api/job-board-api?${p}`)
+    const { body } = await fetchJson<Body>(`${BASE}/api/job-board-api?${p}`, {}, { retries: 1 })
     const part = mapSearch(body, o)
     results.push(...part.results)
     hasMore = Boolean(part.meta.has_more)

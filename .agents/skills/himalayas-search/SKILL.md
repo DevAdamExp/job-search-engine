@@ -10,6 +10,7 @@ countries: "*"
 official: false
 requires_env: []
 sponsor_signal: none (remote roles; locationRestrictions says which countries may apply)
+attribution: "via Himalayas"
 allowed-tools: Bash(bun run .agents/skills/himalayas-search/cli/src/cli.ts *)
 ---
 

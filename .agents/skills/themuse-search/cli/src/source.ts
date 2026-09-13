@@ -51,6 +51,7 @@ export function mapSearch(body: Body | null, o: SearchOpts): SearchResult {
 }
 
 export function validate(o: SearchOpts): string | null {
+  if (o.country && !COUNTRY_NAMES[o.country]) return `The Muse CLI has no location name for ${o.country}; it would return worldwide rows`
   if (!o.query && !o.location && !o.country && !o.extra.category) return "give --query, --location, --country or --category"
   return null
 }

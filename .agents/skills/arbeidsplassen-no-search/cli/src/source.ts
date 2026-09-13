@@ -52,7 +52,7 @@ function title(s: string): string {
 
 export function mapSearch(body: Body | null, o: SearchOpts): SearchResult {
   const hits = body?.hits?.hits ?? []
-  // The API serves 25 per call regardless of `size`; `from` does work. Cap client-side.
+  // The API serves 25 per call regardless of `size`; `from` does work, so pages step by `limit` (≤ 25).
   const rows = hits.map((h) => toRow(h._source)).filter((r) => withinDays(r.date, o.jobage)).slice(0, o.limit)
   return { meta: { page: o.page, limit: o.limit, total: body?.hits?.total?.value ?? null }, results: rows }
 }
@@ -62,7 +62,7 @@ export function validate(_o: SearchOpts): string | null {
 }
 
 export async function search(o: SearchOpts): Promise<SearchResult> {
-  const p = new URLSearchParams({ size: String(o.limit), from: String((o.page - 1) * 25) })
+  const p = new URLSearchParams({ size: String(o.limit), from: String((o.page - 1) * o.limit) })
   const q = [o.query, o.location].filter(Boolean).join(" ")
   if (q) p.set("q", q)
   const { body } = await fetchJson<Body>(`${BASE}/stillinger/api/search?${p}`)

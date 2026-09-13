@@ -174,8 +174,10 @@ def build_search_args(portal: Portal, *, query: str | None, location: str | None
                       remote: str | None, page: int, limit: int, extra: dict[str, str] | None,
                       country: str | None = None) -> list[str]:
     args = ["search", "--format", "json", "--page", str(page), "--limit", str(limit)]
-    # Only worldwide boards take a country; a single-country board's CLI has no such flag.
-    if country and portal.worldwide:
+    # Boards serving several countries take --country (worldwide feeds and multi-country APIs like
+    # Adzuna/Careerjet/Arbeitnow, which would otherwise default to GB); a single-country board's CLI
+    # has no such flag.
+    if country and (portal.worldwide or len(portal.countries) > 1):
         args += ["--country", country.upper()]
     # A value starting with "-" would be re-parsed as a flag by the CLIs' shared parseFlags
     # (e.g. "--help" prints usage to stdout with exit 0 → BAD_OUTPUT). Reject it up front.
@@ -195,7 +197,8 @@ def build_search_args(portal: Portal, *, query: str | None, location: str | None
     if remote:
         args += ["--remote", remote]
     for k, v in (extra or {}).items():
-        if not _FLAG_KEY.match(k) or k in RESERVED_FLAGS or not isinstance(v, str) or v.startswith("-") or len(v) > 100:
+        # 300: a browser user agent (Careerjet's terms want the real one) runs 110–140 characters.
+        if not _FLAG_KEY.match(k) or k in RESERVED_FLAGS or not isinstance(v, str) or v.startswith("-") or len(v) > 300:
             raise PortalError(portal.name, "BAD_FLAG", f"rejected extra flag {k!r}")
         args += [f"--{k}", v]
     return args

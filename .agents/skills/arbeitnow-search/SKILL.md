@@ -10,6 +10,7 @@ countries: ["DE", "GB", "FR", "AU"]
 official: false
 requires_env: []
 sponsor_signal: weak hint only (the board's visa_sponsorship filter exists but the field never arrives)
+attribution: "via Arbeitnow"
 allowed-tools: Bash(bun run .agents/skills/arbeitnow-search/cli/src/cli.ts *)
 ---
 

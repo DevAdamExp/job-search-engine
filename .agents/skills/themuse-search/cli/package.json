@@ -1,7 +1,7 @@
 {
   "name": "themuse-cli",
   "version": "1.0.0",
-  "description": "Search The Muse's public job API by location (\"City, Country\") with client-side keyword filtering. No key (500 requests/hour).",
+  "description": "Search The Muse's public job API by location (\"City, Country\") with client-side keyword filtering. No key (500 requests/hour). Only the countries whose name the CLI knows are claimed \u2014 anything else would return worldwide rows badged as local.",
   "type": "module",
   "main": "src/cli.ts",
   "scripts": {

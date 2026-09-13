@@ -49,7 +49,7 @@ describe("adzuna", () => {
     expect(out.meta.attribution).toBe("Jobs by Adzuna")
     const r = out.results[0]
     expect(r.id).toBe("5119781234"); expect(r.title).toBe("Registered Nurse"); expect(r.company).toBe("NHS Trust")
-    expect(r.location).toBe("Leeds, West Yorkshire"); expect(r.date).toBe("2026-09-10"); expect(r.salary).toBe("28,000–34,000 per year")
+    expect(r.location).toBe("Leeds, West Yorkshire"); expect(r.date).toBe("2026-09-10"); expect(r.salary).toBe("28,000–34,000")
     expect(r.attribution).toBe("Jobs by Adzuna")
   })
   test("country and flag validation", () => {
