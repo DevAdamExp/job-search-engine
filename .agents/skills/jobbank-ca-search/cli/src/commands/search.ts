@@ -58,10 +58,17 @@ export async function runSearch(opts: SearchOpts): Promise<number> {
   try {
     const html = await htmlFetch(buildUrl(opts))
     let cards = parseJobCards(html)
-    const since = cutoff(opts.jobage)
-    if (since) cards = cards.filter((c) => !c.date || c.date >= since)
-    if (opts.limit !== undefined && opts.limit >= 0) cards = cards.slice(0, opts.limit)
     const total = parseTotal(html)
+    // The board says it has results but none parsed: the markup moved. Fail loudly instead of
+    // reporting an empty market (the CRM would tell a consultant "no listings").
+    if ((total ?? 0) > 0 && cards.length === 0) {
+      writeError(`Job Bank reports ${total} results but no card parsed — markup changed?`, "PARSE_EMPTY")
+      return 1
+    }
+    const since = cutoff(opts.jobage)
+    // Under a posting-age filter an undated card cannot be shown to satisfy it: drop it.
+    if (since) cards = cards.filter((c) => !!c.date && c.date >= since)
+    if (opts.limit !== undefined && opts.limit >= 0) cards = cards.slice(0, opts.limit)
 
     if (opts.format === "table") {
       process.stdout.write(renderTable(cards) + "\n")

@@ -11,6 +11,7 @@ result to one shape with the upstream's canonical dedupe key attached.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import os
 import re
@@ -33,6 +34,8 @@ BUN = os.environ.get("BUN_BIN", "bun")
 # Flags the contract guarantees (add-portal.md "portal-skill contract"); a portal may add
 # its own, which callers pass through ``extra``.
 COMMON_FLAGS = ("query", "jobage", "page", "limit", "format")
+# Never accepted through ``extra``: the service maps these itself, or they hijack the CLI.
+RESERVED_FLAGS = set(COMMON_FLAGS) | {"location", "remote", "help", "h", "q", "l", "n"}
 
 # Where a portal does not take ``--location`` the way the contract suggests, say how the
 # service's ``location`` field maps. Anything not listed maps to ``--location``.
@@ -116,6 +119,11 @@ def discover(skills_dir: Path = SKILLS_DIR) -> dict[str, Portal]:
 def build_search_args(portal: Portal, *, query: str | None, location: str | None, jobage: int | None,
                       remote: str | None, page: int, limit: int, extra: dict[str, str] | None) -> list[str]:
     args = ["search", "--format", "json", "--page", str(page), "--limit", str(limit)]
+    # A value starting with "-" would be re-parsed as a flag by the CLIs' shared parseFlags
+    # (e.g. "--help" prints usage to stdout with exit 0 → BAD_OUTPUT). Reject it up front.
+    for label, value in (("query", query), ("location", location)):
+        if value and value.lstrip().startswith("-"):
+            raise PortalError(portal.name, "BAD_FLAG", f"{label} may not start with '-'")
     if query:
         args += ["--query", query]
     if location:
@@ -129,7 +137,7 @@ def build_search_args(portal: Portal, *, query: str | None, location: str | None
     if remote:
         args += ["--remote", remote]
     for k, v in (extra or {}).items():
-        if not _FLAG_KEY.match(k) or k in COMMON_FLAGS or v.startswith("-") or len(v) > 100:
+        if not _FLAG_KEY.match(k) or k in RESERVED_FLAGS or not isinstance(v, str) or v.startswith("-") or len(v) > 100:
             raise PortalError(portal.name, "BAD_FLAG", f"rejected extra flag {k!r}")
         args += [f"--{k}", v]
     return args
@@ -150,7 +158,10 @@ async def run_cli(portal: Portal, args: list[str], timeout: float = CLI_TIMEOUT_
     try:
         out, err = await asyncio.wait_for(proc.communicate(), timeout=timeout)
     except asyncio.TimeoutError:
-        proc.kill()
+        with contextlib.suppress(ProcessLookupError):
+            proc.kill()
+        with contextlib.suppress(Exception):
+            await asyncio.wait_for(proc.wait(), timeout=5)   # reap; never leave a zombie
         raise PortalError(portal.name, "TIMEOUT", f"CLI exceeded {timeout:.0f}s")
     if proc.returncode != 0:
         code, message = "CLI_FAILED", (err or out).decode("utf-8", "replace").strip()[:500]
@@ -176,8 +187,10 @@ def normalise(portal: Portal, raw: dict | list) -> tuple[dict, list[dict]]:
     portal omitted one), the portal name, the canonical dedupe key and a fetch timestamp."""
     if isinstance(raw, list):
         meta, items = {"count": len(raw)}, raw
-    else:
+    elif isinstance(raw, dict):
         meta, items = dict(raw.get("meta") or {}), list(raw.get("results") or [])
+    else:
+        raise PortalError(portal.name, "BAD_OUTPUT", "CLI returned no JSON object")
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     out = []
     for item in items:

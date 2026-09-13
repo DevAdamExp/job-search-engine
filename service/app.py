@@ -13,6 +13,7 @@ permissions, audit and the sponsor registers). Auth is one shared secret in
 from __future__ import annotations
 
 import asyncio
+import hmac
 import os
 import subprocess
 from typing import Literal
@@ -28,13 +29,23 @@ _PORTALS: dict[str, P.Portal] = P.discover()
 JOB_AGES = {1, 7, 14, 30}
 
 
+def _bun_version() -> str | None:
+    try:
+        return subprocess.run([P.BUN, "--version"], capture_output=True, text=True, timeout=5).stdout.strip() or None
+    except Exception:
+        return None
+
+
+_BUN_VERSION = _bun_version()   # resolved once at import — /health must never block the loop
+
+
 def _require_token(x_engine_token: str | None = Header(default=None)) -> None:
     if os.environ.get("JOB_ENGINE_DEV") == "1":
         return
     expected = os.environ.get("JOB_ENGINE_TOKEN")
     if not expected:
         raise HTTPException(503, "JOB_ENGINE_TOKEN is not configured")
-    if x_engine_token != expected:
+    if not x_engine_token or not hmac.compare_digest(x_engine_token, expected):
         raise HTTPException(401, "bad engine token")
 
 
@@ -85,12 +96,7 @@ async def _search_one(p: P.Portal, req: SearchRequest) -> dict:
 
 @app.get("/health")
 async def health() -> dict:
-    try:
-        bun = subprocess.run([P.BUN, "--version"], capture_output=True, text=True, timeout=5).stdout.strip()
-    except Exception:
-        bun = None
-    return {"ok": bool(bun), "bun": bun, "portals": len(_PORTALS),
-            "enabled": sorted(n for n, p in _PORTALS.items() if p.enabled)}
+    return {"ok": bool(_BUN_VERSION), "bun": _BUN_VERSION, "portals": len(_PORTALS)}
 
 
 @app.get("/portals", dependencies=[Depends(_require_token)])
@@ -105,15 +111,20 @@ async def search(req: SearchRequest) -> dict:
     try:
         return await _search_one(p, req)
     except P.PortalError as e:
-        raise HTTPException(502, {"portal": e.portal, "code": e.code, "error": e.message})
+        raise HTTPException(422 if e.code == "BAD_FLAG" else 502, {"portal": e.portal, "code": e.code, "error": e.message})
 
 
 @app.post("/search/multi", dependencies=[Depends(_require_token)])
 async def search_multi(req: MultiSearchRequest) -> dict:
     _check_jobage(req.jobage)
-    ps = [_portal(n) for n in dict.fromkeys(req.portals)]
 
-    async def one(p: P.Portal) -> dict:
+    async def one(name: str) -> dict:
+        # A missing or disabled board is reported per portal — never fatal for the others.
+        p = _PORTALS.get(name)
+        if not p:
+            return {"portal": name, "meta": {"count": 0}, "results": [], "error": {"code": "UNKNOWN_PORTAL", "message": "unknown portal"}}
+        if not p.enabled:
+            return {"portal": name, "meta": {"count": 0}, "results": [], "error": {"code": "DISABLED", "message": "portal is disabled"}}
         sub = SearchRequest(portal=p.name, query=req.query, location=req.location, jobage=req.jobage,
                             remote=req.remote, limit=req.limit, extra=req.extra.get(p.name, {}))
         try:
@@ -122,16 +133,21 @@ async def search_multi(req: MultiSearchRequest) -> dict:
             return {"portal": p.name, "meta": {"count": 0}, "results": [],
                     "error": {"code": e.code, "message": e.message}}
 
-    parts = await asyncio.gather(*(one(p) for p in ps))
-    seen: set[str] = set()
-    merged = []
+    parts = await asyncio.gather(*(one(n) for n in dict.fromkeys(req.portals)))
+    # Dedupe on the posting itself (portal + url): two postings of one title by one employer in
+    # two cities are two jobs. `key` stays on every row as the cross-portal hint.
+    seen: set[tuple[str, str]] = set()
+    merged, deduped = [], 0
     for part in parts:
         for r in part["results"]:
-            if r["key"] in seen:
+            ident = (r["portal"], r.get("url") or r.get("id") or r["key"])
+            if ident in seen:
+                deduped += 1
                 continue
-            seen.add(r["key"])
+            seen.add(ident)
             merged.append(r)
-    return {"results": merged, "portals": [{k: v for k, v in part.items() if k != "results"} for part in parts]}
+    return {"results": merged, "meta": {"count": len(merged), "deduped": deduped},
+            "portals": [{k: v for k, v in part.items() if k != "results"} for part in parts]}
 
 
 @app.get("/detail", dependencies=[Depends(_require_token)])

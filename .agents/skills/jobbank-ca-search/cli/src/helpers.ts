@@ -13,6 +13,7 @@ export const SEARCH_URL = `${BASE}/jobsearch/jobsearch`
 export const POSTING_URL = `${BASE}/jobsearch/jobposting`
 
 const UA = "Mozilla/5.0 (compatible; jobbank-ca-search-cli/1.0)"
+export const CRAWL_DELAY_MS = 5000
 
 export function writeError(error: string, code: string): void {
   process.stderr.write(JSON.stringify({ error, code }) + "\n")
@@ -34,9 +35,10 @@ export async function htmlFetch(url: string): Promise<string> {
     })
     if (response.status === 429 || response.status >= 500) {
       if (attempt === maxRetries) throw new Error(`Request failed: ${response.status} ${response.statusText}`)
+      // Never retry faster than the board's robots Crawl-delay (5 s), least of all on a 429.
       const jitter = Math.floor(Math.random() * 500)
-      await new Promise((r) => setTimeout(r, delay + jitter))
-      delay = Math.min(delay * 2, 10000)
+      await new Promise((r) => setTimeout(r, Math.max(delay, CRAWL_DELAY_MS) + jitter))
+      delay = Math.min(delay * 2, 20000)
       continue
     }
     if (response.status === 404) return ""
@@ -112,31 +114,49 @@ export function extractByClass(html: string, cls: string): string | null {
   return extractFrom(html, new RegExp(`<[a-z0-9]+[^>]*\\bclass="${cls}[^"]*"[^>]*>`, "i"))
 }
 
+// Job Bank is bilingual: English "September 08, 2026" and French "8 septembre 2026" both occur.
 const MONTHS: Record<string, string> = {
   january: "01", february: "02", march: "03", april: "04", may: "05", june: "06", july: "07",
   august: "08", september: "09", october: "10", november: "11", december: "12",
+  janvier: "01", février: "02", fevrier: "02", mars: "03", avril: "04", mai: "05", juin: "06", juillet: "07",
+  août: "08", aout: "08", septembre: "09", octobre: "10", novembre: "11", décembre: "12", decembre: "12",
 }
 
-/** "September 08, 2026" / "Posted on September 8, 2026" → "2026-09-08"; ISO passes through. */
+/** "September 08, 2026" / "Posted on September 8, 2026" / "Publié le 8 septembre 2026" → "2026-09-08";
+ *  ISO passes through. */
 export function parseDate(text: string | null | undefined): string | null {
   if (!text) return null
   const iso = text.match(/(\d{4}-\d{2}-\d{2})/)
   if (iso) return iso[1]
-  const m = text.match(/([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})/)
-  if (!m) return null
-  const mm = MONTHS[m[1].toLowerCase()]
+  const en = text.match(/([A-Za-zéûÉÛ]+)\s+(\d{1,2}),\s*(\d{4})/)
+  const fr = text.match(/(\d{1,2})(?:er)?\s+([A-Za-zéûÉÛ]+)\s+(\d{4})/)
+  const [monthName, day, year] = en ? [en[1], en[2], en[3]] : fr ? [fr[2], fr[1], fr[3]] : [null, null, null]
+  if (!monthName || !day || !year) return null
+  const mm = MONTHS[monthName.toLowerCase()]
   if (!mm) return null
-  return `${m[3]}-${mm}-${m[2].padStart(2, "0")}`
+  return `${year}-${mm}-${day.padStart(2, "0")}`
 }
 
 export type Lmia = "requested" | "approved" | null
 
-/** The LMIA marker text → requested | approved | null. */
-export function parseLmia(text: string | null | undefined): Lmia {
+/** The LMIA marker → requested | approved | null. Prefer the flag's own class (Job Bank marks
+ *  the element `jobLMIAflag submitted` / `jobLMIAflag approved`); fall back to its text, testing
+ *  the weaker state first so "requested - not yet approved" never reads as approved. */
+export function parseLmia(text: string | null | undefined, classes: string | null = null): Lmia {
+  const c = (classes || "").toLowerCase()
+  if (/\bsubmitted\b|\brequested\b|\bpending\b/.test(c)) return "requested"
+  if (/\bapproved\b/.test(c)) return "approved"
   const t = (text || "").toLowerCase()
-  if (/approved/.test(t) && /lmia/.test(t)) return "approved"
-  if (/lmia/.test(t) && /(requested|submitted)/.test(t)) return "requested"
+  if (!/lmia/.test(t)) return null
+  if (/(requested|submitted|pending|not (yet )?approved)/.test(t)) return "requested"
+  if (/approved/.test(t)) return "approved"
   return null
+}
+
+/** The class attribute of the first element whose class list starts with `cls`. */
+export function classesOf(html: string, cls: string): string | null {
+  const m = new RegExp(`<[a-z0-9]+[^>]*\\bclass="(${cls}[^"]*)"`, "i").exec(html)
+  return m ? m[1] : null
 }
 
 export interface JobCard {
@@ -174,7 +194,7 @@ export function parseJobCards(html: string): JobCard[] {
     const sourceRaw = li("source")
     const jobNumber = sourceRaw ? (sourceRaw.match(/(\d{5,})/)?.[1] ?? null) : null
     const lmiaHtml = extractByClass(chunk, "jobLMIAflag")
-    const lmia = parseLmia(lmiaHtml ? clean(lmiaHtml) : null)
+    const lmia = parseLmia(lmiaHtml ? clean(lmiaHtml) : null, classesOf(chunk, "jobLMIAflag"))
     const workplaceHtml = chunk.match(/class="telework"[^>]*>([\s\S]*?)<\/span>/i)
     results.push({
       id,
@@ -257,7 +277,7 @@ export function parseJobDetail(html: string, id: string, today: string = new Dat
   const nocMatch = html.match(/class="noc-no"[^>]*>\s*NOC\s*(\d{4,5})/i)
   const vacMatch = html.match(/(\d+)\s+vacanc/i)
   const lmiaHtml = extractByClass(html, "jobLMIAflag job-marker") ?? extractByClass(html, "jobLMIAflag")
-  const lmia = parseLmia(lmiaHtml ? clean(lmiaHtml) : null)
+  const lmia = parseLmia(lmiaHtml ? clean(lmiaHtml) : null, classesOf(html, "jobLMIAflag"))
   const description = prop(html, "description")
   const expired = /this job posting has expired|no longer available|posting is closed/i.test(html)
   const isActive = !expired && (!validThrough || validThrough >= today)

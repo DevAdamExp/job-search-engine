@@ -68,10 +68,17 @@ class ArgsTests(unittest.TestCase):
         self.assertEqual(ji[-2:], ["--query", "Aarhus"])   # folded into the query
 
     def test_extra_flags_are_validated(self):
-        for bad in ({"--x": "1"}, {"limit": "99"}, {"k": "-v"}, {"K": "v"}, {"a" * 40: "v"}):
+        for bad in ({"--x": "1"}, {"limit": "99"}, {"k": "-v"}, {"K": "v"}, {"a" * 40: "v"},
+                    {"location": "Berlin"}, {"help": "x"}, {"remote": "remote"}):
             with self.assertRaises(P.PortalError):
                 P.build_search_args(self._p(), query="q", location=None, jobage=None, remote=None,
                                     page=1, limit=5, extra=bad)
+
+    def test_query_and_location_may_not_start_with_a_dash(self):
+        for q, loc in (("--help", None), ("-h", None), ("nurse", "--x"), ("  -q", None)):
+            with self.assertRaises(P.PortalError):
+                P.build_search_args(self._p(), query=q, location=loc, jobage=None, remote=None,
+                                    page=1, limit=5, extra=None)
 
 
 class NormaliseTests(unittest.TestCase):
@@ -95,6 +102,12 @@ class NormaliseTests(unittest.TestCase):
         p = P.Portal(name="x-search", dir=Path("."), cli=Path("cli.ts"), enabled=True)
         meta, rows = P.normalise(p, [{"id": "1", "title": "T", "company": None, "url": "u"}])
         self.assertEqual((meta["count"], len(rows)), (1, 1))
+
+    def test_non_json_object_is_a_portal_error(self):
+        p = P.Portal(name="x-search", dir=Path("."), cli=Path("cli.ts"), enabled=True)
+        for raw in (None, "text", 42):
+            with self.assertRaises(P.PortalError):
+                P.normalise(p, raw)
 
 
 class RateLimitTests(unittest.TestCase):
@@ -143,6 +156,7 @@ class HttpTests(unittest.TestCase):
             return {"meta": {"page": 1}, "results": [
                 {"id": "1", "title": "Nurse", "company": "NHS", "location": "Leeds", "date": "2026-09-01", "url": "https://x/1"},
                 {"id": "2", "title": "Nurse", "company": "NHS", "location": "Leeds", "date": "2026-09-01", "url": "https://x/1"},
+                {"id": "3", "title": "Nurse", "company": "NHS", "location": "York", "date": "2026-09-01", "url": "https://x/3"},
             ]}
         self.rr = mock.patch.object(P, "run_cli", fake_run)
         self.rr.start()
@@ -162,15 +176,23 @@ class HttpTests(unittest.TestCase):
         r = self.c.post("/search", json={"portal": "ok-search", "query": "nurse"}, headers=self.h)
         self.assertEqual(r.status_code, 200, r.text)
         body = r.json()
-        self.assertEqual(body["meta"]["count"], 2)
+        self.assertEqual(body["meta"]["count"], 3)
         self.assertEqual(body["results"][0]["portal"], "ok-search")
-        r = self.c.post("/search/multi", json={"portals": ["ok-search", "bad-search"], "query": "nurse"}, headers=self.h)
+        r = self.c.post("/search/multi", json={"portals": ["ok-search", "bad-search", "off-search", "nope-search"], "query": "nurse"},
+                        headers=self.h)
         self.assertEqual(r.status_code, 200, r.text)
         body = r.json()
-        self.assertEqual(len(body["results"]), 1)                  # same key twice → one row
+        # same posting (portal+url) twice → one row; a same-titled posting in another city stays
+        self.assertEqual(len(body["results"]), 2)
+        self.assertEqual(body["meta"], {"count": 2, "deduped": 1})
         errs = {p["portal"]: p.get("error") for p in body["portals"]}
         self.assertIsNone(errs["ok-search"])
         self.assertEqual(errs["bad-search"]["code"], "SEARCH_FAILED")
+        self.assertEqual(errs["off-search"]["code"], "DISABLED")      # reported, never fatal
+        self.assertEqual(errs["nope-search"]["code"], "UNKNOWN_PORTAL")
+        # a leading-dash query is a 422 with the reason, not a 502
+        r = self.c.post("/search", json={"portal": "ok-search", "query": "--help"}, headers=self.h)
+        self.assertEqual(r.status_code, 422, r.text)
 
     def test_validation(self):
         self.assertEqual(self.c.post("/search", json={"portal": "nope", "query": "x"}, headers=self.h).status_code, 404)

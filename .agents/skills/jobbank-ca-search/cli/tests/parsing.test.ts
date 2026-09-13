@@ -94,10 +94,19 @@ describe("helpers", () => {
     expect(parseDate("no date")).toBeNull()
     expect(parseDate(null)).toBeNull()
   })
-  test("lmia text", () => {
+  test("lmia text and class", () => {
     expect(parseLmia("LMIA requested")).toBe("requested")
     expect(parseLmia("Approved LMIA")).toBe("approved")
+    expect(parseLmia("LMIA requested - not yet approved")).toBe("requested")
+    expect(parseLmia("LMIA application not approved")).toBe("requested")
+    expect(parseLmia("anything", "jobLMIAflag submitted nopopup")).toBe("requested")
+    expect(parseLmia("anything", "jobLMIAflag approved")).toBe("approved")
     expect(parseLmia("New")).toBeNull()
+  })
+  test("french dates", () => {
+    expect(parseDate("Publié le 8 septembre 2026")).toBe("2026-09-08")
+    expect(parseDate("1er août 2026")).toBe("2026-08-01")
+    expect(parseDate("13 décembre 2026")).toBe("2026-12-13")
   })
   test("facets", () => {
     expect(jobageToFage(1)).toBe("2")
