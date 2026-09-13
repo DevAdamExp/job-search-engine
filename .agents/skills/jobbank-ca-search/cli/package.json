@@ -1,0 +1,15 @@
+{
+  "name": "jobbank-ca-cli",
+  "version": "1.0.0",
+  "description": "CLI for searching Canada's official Job Bank (jobbank.gc.ca) — the Government of Canada job board — including its LMIA (foreign-worker) facet. Public Atom feed + posting pages, no authentication, zero runtime dependencies.",
+  "type": "module",
+  "main": "src/cli.ts",
+  "bin": { "jobbank-ca-search": "src/cli.ts" },
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": { "typescript": "^5.4.0", "@types/bun": "1.3.14" }
+}
